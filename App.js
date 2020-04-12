@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { AppLoading } from "expo"
 import ToDo from "./ToDo";
+import { preventAutoHide } from 'expo/build/launch/SplashScreen';
 
 const { height, width } = Dimensions.get("window");
 
@@ -46,7 +47,16 @@ export default class App extends React.Component {
             onSubmitEditing={this._addToDo}
           />
           <ScrollView contentContainerStyle={styles.toDos}>
-            {Object.values(toDos).map(toDo => (<ToDo key={toDo.id} {...toDo} deleteToDo={this._deleteToDo} />))}
+            {Object.values(toDos).map(toDo => (
+              <ToDo 
+                key={toDo.id} 
+                deleteToDo={this._deleteToDo} 
+                uncompleteToDo={this._uncompleteToDo}
+                completeToDo={this._completeToDo}
+                updateToDo={this._updateToDo}
+                {...toDo} 
+              />
+            ))}
           </ScrollView>
         </View>
       </View>
@@ -98,7 +108,52 @@ export default class App extends React.Component {
       };
       return {...newState}
     });
-  }
+  };
+  _uncompleteToDo = (id) => {
+    this.setState(prevState => {
+      const newState = {
+        ...prevState,
+        toDos: {
+          ...prevState.toDos,
+          [id]: {
+            ...prevState.toDos[id],
+            isCompleted: false
+          }
+        }
+      };
+      return {...newState};
+    });
+  };
+  _completeToDo = (id) => {
+    this.setState(prevState => {
+      const newState = {
+        ...prevState,
+        toDos: {
+          ...prevState.toDos,
+          [id]: {
+            ...prevState.toDos[id],
+            isCompleted: true
+          }
+        }
+      };
+      return {...newState};
+    });
+  };
+  _updateToDo = (id, text) => {
+    this.setState(prevState => {
+      const newState = {
+        ...prevState,
+        toDos: {
+          ...prevState.toDos,
+          [id]: {
+            ...prevState.toDos[id],
+            text
+          }
+        }
+      };
+      return {...newState};
+    });
+  };
 }
 
 
